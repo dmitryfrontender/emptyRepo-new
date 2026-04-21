@@ -90,7 +90,22 @@ function js_main() {
 		.pipe(connect.reload());
 };
 
+function fonts() {
+	return src('src/fonts/**/*')
+		.pipe(dest('dist/fonts/'))
+		.pipe(connect.reload());
+};
+
+function images() {
+	return src('src/images/**/*', { since: 0 })
+		.pipe(dest('dist/images/'))
+		.pipe(connect.reload());
+};
+
 async function asyncAwaitTask() {
+	// Run initial copy for static assets
+	await Promise.all([fonts(), images()]);
+
 	watch('src/css/**/*.css', css);
 	watch('src/scss/**/*.scss', scss);
 	watch('src/*.html', html);
@@ -98,6 +113,8 @@ async function asyncAwaitTask() {
 	watch('src/layouts/partials/*.html', handlebars_partials);
 	watch(['src/js/**/*.js', '!' + 'src/js/main.js'], js_plugins); //исключить файл main.js
 	watch('src/js/main.js', js_main);
+	watch('src/fonts/**/*', { events: ['add', 'change', 'unlink'] }, fonts);
+	watch('src/images/**/*', { events: ['add', 'change', 'unlink'] }, images);
 }
 
 
